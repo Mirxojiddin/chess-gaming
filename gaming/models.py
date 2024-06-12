@@ -3,8 +3,8 @@ from django.db import models
 
 
 class Country(models.Model):
-	name = models.CharField(max_length=50 )
-	prefix = models.CharField(max_length=5)
+	name = models.CharField(max_length=50)
+	prefix = models.CharField(max_length=5, null=True)
 
 	def __str__(self):
 		return f"{self.name}"
@@ -23,7 +23,7 @@ class Player(models.Model):
 	games_played = models.PositiveIntegerField(default=0, editable=False)
 
 	def __str__(self):
-		return f"{self.country.prefix} {self.name}"
+		return f" {self.name}"
 
 	def save(self, *args, **kwargs):
 		self.games_played = self.wins + self.losses + self.draws

@@ -16,7 +16,7 @@ class Country(models.Model):
 class Player(models.Model):
 	name = models.CharField(max_length=100)
 	elo_rating = models.PositiveIntegerField(default=0)
-	country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True)
+	country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, related_name='country')
 	wins = models.PositiveIntegerField(default=0)
 	losses = models.PositiveIntegerField(default=0)
 	draws = models.PositiveIntegerField(default=0)

@@ -176,6 +176,75 @@ class PlayerTestCase(TestCase):
 		self.assertEqual(response.data['name'], 'Mirxojiddin')
 		self.assertEqual(response.data['elo_rating'], 1200)
 
+	def test_filter_player(self):
+		url = reverse('gaming:player')
+		response = self.client.get(url, params={'name': "Mirxojiddin"})
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'name', 'country', 'elo_rating', 'wins', 'losses', 'draws', 'games_played']
+			)
+		self.assertEqual(response.data[0]['wins'], 10)
+		self.assertEqual(response.data[0]['losses'], 5)
+		self.assertEqual(response.data[0]['draws'], 8)
+		self.assertEqual(response.data[0]['name'], 'Mirxojiddin')
+		self.assertEqual(response.data[0]['elo_rating'], 1400)
+		self.assertEqual(response.data[0]['games_played'], 23)
+
+		response = self.client.get(url, params={'min_elo_rating': "1300"})
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'name', 'country', 'elo_rating', 'wins', 'losses', 'draws', 'games_played']
+			)
+		self.assertEqual(response.data[0]['wins'], 10)
+		self.assertEqual(response.data[0]['losses'], 5)
+		self.assertEqual(response.data[0]['draws'], 8)
+		self.assertEqual(response.data[0]['name'], 'Mirxojiddin')
+		self.assertEqual(response.data[0]['elo_rating'], 1400)
+		self.assertEqual(response.data[0]['games_played'], 23)
+		response = self.client.get(url, params={'max_elo_rating': "1500"})
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'name', 'country', 'elo_rating', 'wins', 'losses', 'draws', 'games_played']
+			)
+		self.assertEqual(response.data[0]['wins'], 10)
+		self.assertEqual(response.data[0]['losses'], 5)
+		self.assertEqual(response.data[0]['draws'], 8)
+		self.assertEqual(response.data[0]['name'], 'Mirxojiddin')
+		self.assertEqual(response.data[0]['elo_rating'], 1400)
+		self.assertEqual(response.data[0]['games_played'], 23)
+		response = self.client.get(url, params={'max_elo_rating': "1500", 'min_elo_rating': "1300"})
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'name', 'country', 'elo_rating', 'wins', 'losses', 'draws', 'games_played']
+			)
+		self.assertEqual(response.data[0]['wins'], 10)
+		self.assertEqual(response.data[0]['losses'], 5)
+		self.assertEqual(response.data[0]['draws'], 8)
+		self.assertEqual(response.data[0]['name'], 'Mirxojiddin')
+		self.assertEqual(response.data[0]['elo_rating'], 1400)
+		self.assertEqual(response.data[0]['games_played'], 23)
+		response = self.client.get(url, params={"country": "Uzbeksitan"})
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'name', 'country', 'elo_rating', 'wins', 'losses', 'draws', 'games_played']
+			)
+		self.assertEqual(response.data[0]['wins'], 10)
+		self.assertEqual(response.data[0]['losses'], 5)
+		self.assertEqual(response.data[0]['draws'], 8)
+		self.assertEqual(response.data[0]['name'], 'Mirxojiddin')
+		self.assertEqual(response.data[0]['elo_rating'], 1400)
+		self.assertEqual(response.data[0]['games_played'], 23)
+
 
 class CountryTestCase(APITestCase):
 	def setUp(self):
@@ -280,7 +349,6 @@ class GameTestCase(APITestCase):
 		}
 
 		response = self.client.post(url, data=payload)
-		print(response.json())
 		self.assertEqual(response.status_code, 201)
 		self.assertEqual(response.data['white'], player1.id)
 		self.assertEqual(response.data['black'], player2.id)
@@ -304,3 +372,69 @@ class GameTestCase(APITestCase):
 		self.assertEqual(response.data[1]['moves'], 47)
 		self.assertEqual(response.data[1]['result'], 'draw')
 		self.assertEqual(response.data[1]['opening'], opening.id)
+
+	def test_filter_game(self):
+		player1 = Player.objects.get(name="Mirxojiddin")
+		player2 = Player.objects.get(name="Tojiddin")
+		opening = Opening.objects.get(name="Uzbeksitan")
+		url = reverse('gaming:game')
+		response = self.client.get(url, params={"white_player_name": "Mirxojiddin"})
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
+			)
+		self.assertEqual(response.data[0]['white'], player1.id)
+		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['moves'], 46)
+		self.assertEqual(response.data[0]['result'], 'win')
+		self.assertEqual(response.data[0]['opening'], opening.id)
+		response = self.client.get(url, params={"black_player_name": "Tojiddin", "white_player_name": "Mirxojiddin"})
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
+			)
+		self.assertEqual(response.data[0]['white'], player1.id)
+		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['moves'], 46)
+		self.assertEqual(response.data[0]['result'], 'win')
+		self.assertEqual(response.data[0]['opening'], opening.id)
+		response = self.client.get(url, params={"black_player_name": "Tojiddin", })
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
+			)
+		self.assertEqual(response.data[0]['white'], player1.id)
+		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['moves'], 46)
+		self.assertEqual(response.data[0]['result'], 'win')
+		self.assertEqual(response.data[0]['opening'], opening.id)
+		response = self.client.get(url, params={"result": "win" })
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
+			)
+		self.assertEqual(response.data[0]['white'], player1.id)
+		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['moves'], 46)
+		self.assertEqual(response.data[0]['result'], 'win')
+		self.assertEqual(response.data[0]['opening'], opening.id)
+		response = self.client.get(url, params={"opening": "Uzbekistan"})
+		self.assertEqual(response.status_code, 200)
+		for data in response.data:
+			self.assertEqual(
+				list(data.keys()),
+				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
+			)
+		self.assertEqual(response.data[0]['white'], player1.id)
+		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['moves'], 46)
+		self.assertEqual(response.data[0]['result'], 'win')
+		self.assertEqual(response.data[0]['opening'], opening.id)

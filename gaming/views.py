@@ -1,4 +1,7 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, RetrieveAPIView, UpdateAPIView
+
+from gaming.filter import PlayerFilter, GameFilter
 from gaming.models import Country, Player, Game, Opening
 from gaming.serializer import PlayerListSerializer, CountryListSerializer, PlayerAddSerializer, \
 	PlayerUpdateSerializer, GameListSerializer, GameUpdateSerializer, GameAddSerializer, OpeningListSerializer
@@ -11,6 +14,8 @@ class CountryListAPIView(ListAPIView):
 
 class PlayerListAPIView(ListAPIView, CreateAPIView):
 	queryset = Player.objects.all()
+	filter_backends = [DjangoFilterBackend]
+	filterset_class = PlayerFilter
 
 	def get_serializer_class(self):
 		if self.request.method == "GET":
@@ -37,6 +42,8 @@ class PlayerDetailAPIView(DestroyAPIView, RetrieveAPIView, UpdateAPIView):
 
 class GameListAPIView(ListAPIView, CreateAPIView):
 	queryset = Game.objects.all()
+	filter_backends = [DjangoFilterBackend]
+	filterset_class = GameFilter
 
 	def get_serializer_class(self):
 		if self.request.method == "GET":

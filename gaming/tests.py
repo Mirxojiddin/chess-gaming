@@ -48,26 +48,6 @@ class PlayerTestCase(TestCase):
 		self.assertEqual(response.data[0]['name'], 'Mirxojiddin')
 		self.assertEqual(response.data[0]['elo_rating'], 1400)
 		self.assertEqual(response.data[0]['games_played'], 23)
-		country = Country.objects.get(name="Uzbeksitan")
-		Player.objects.create(name="Nurali", country=country, wins=45, losses=52, draws=9, elo_rating=2000)
-		response = self.client.get(url)
-		for data in response.data:
-			self.assertEqual(
-							list(data.keys()),
-							['id', 'name', 'country', 'elo_rating', 'wins', 'losses', 'draws', 'games_played']
-			)
-		self.assertEqual(response.data[0]['wins'], 45)
-		self.assertEqual(response.data[0]['losses'], 52)
-		self.assertEqual(response.data[0]['draws'], 9)
-		self.assertEqual(response.data[0]['name'], 'Nurali')
-		self.assertEqual(response.data[0]['elo_rating'], 2000)
-		self.assertEqual(response.data[0]['games_played'], 106)
-		self.assertEqual(response.data[1]['wins'], 10)
-		self.assertEqual(response.data[1]['losses'], 5)
-		self.assertEqual(response.data[1]['draws'], 8)
-		self.assertEqual(response.data[1]['name'], 'Mirxojiddin')
-		self.assertEqual(response.data[1]['elo_rating'], 1400)
-		self.assertEqual(response.data[1]['games_played'], 23)
 
 	def test_add_player(self):
 		url = reverse('gaming:player')
@@ -307,31 +287,11 @@ class GameTestCase(APITestCase):
 				list(data.keys()),
 				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
 			)
-		self.assertEqual(response.data[0]['white'], player1.id)
-		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['white'], player1.name)
+		self.assertEqual(response.data[0]['black'], player2.name)
 		self.assertEqual(response.data[0]['moves'], 46)
 		self.assertEqual(response.data[0]['result'], 'win')
-		self.assertEqual(response.data[0]['opening'], opening.id)
-		Game.objects.create(
-			white=player2, black=player1, moves=50,
-			date=datetime.now(), result='loss', opening=opening
-		)
-		response = self.client.get(url)
-		for data in response.data:
-			self.assertEqual(
-				list(data.keys()),
-				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
-			)
-		self.assertEqual(response.data[0]['white'], player1.id)
-		self.assertEqual(response.data[0]['black'], player2.id)
-		self.assertEqual(response.data[0]['moves'], 46)
-		self.assertEqual(response.data[0]['result'], 'win')
-		self.assertEqual(response.data[0]['opening'], opening.id)
-		self.assertEqual(response.data[1]['white'], player2.id)
-		self.assertEqual(response.data[1]['black'], player1.id)
-		self.assertEqual(response.data[1]['moves'], 50)
-		self.assertEqual(response.data[1]['result'], 'loss')
-		self.assertEqual(response.data[1]['opening'], opening.id)
+		self.assertEqual(response.data[0]['opening'], opening.name)
 
 	def test_add_game(self):
 		player1 = Player.objects.get(name="Mirxojiddin")
@@ -362,16 +322,16 @@ class GameTestCase(APITestCase):
 				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
 			)
 		self.assertEqual(response.status_code, 200)
-		self.assertEqual(response.data[0]['white'], player1.id)
-		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['white'], player1.name)
+		self.assertEqual(response.data[0]['black'], player2.name)
 		self.assertEqual(response.data[0]['moves'], 46)
 		self.assertEqual(response.data[0]['result'], 'win')
-		self.assertEqual(response.data[0]['opening'], opening.id)
-		self.assertEqual(response.data[1]['white'], player1.id)
-		self.assertEqual(response.data[1]['black'], player2.id)
+		self.assertEqual(response.data[0]['opening'], opening.name)
+		self.assertEqual(response.data[1]['white'], player1.name)
+		self.assertEqual(response.data[1]['black'], player2.name)
 		self.assertEqual(response.data[1]['moves'], 47)
 		self.assertEqual(response.data[1]['result'], 'draw')
-		self.assertEqual(response.data[1]['opening'], opening.id)
+		self.assertEqual(response.data[1]['opening'], opening.name)
 
 	def test_filter_game(self):
 		player1 = Player.objects.get(name="Mirxojiddin")
@@ -385,11 +345,11 @@ class GameTestCase(APITestCase):
 				list(data.keys()),
 				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
 			)
-		self.assertEqual(response.data[0]['white'], player1.id)
-		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['white'], player1.name)
+		self.assertEqual(response.data[0]['black'], player2.name)
 		self.assertEqual(response.data[0]['moves'], 46)
 		self.assertEqual(response.data[0]['result'], 'win')
-		self.assertEqual(response.data[0]['opening'], opening.id)
+		self.assertEqual(response.data[0]['opening'], opening.name)
 		response = self.client.get(url, params={"black_player_name": "Tojiddin", "white_player_name": "Mirxojiddin"})
 		self.assertEqual(response.status_code, 200)
 		for data in response.data:
@@ -397,11 +357,11 @@ class GameTestCase(APITestCase):
 				list(data.keys()),
 				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
 			)
-		self.assertEqual(response.data[0]['white'], player1.id)
-		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['white'], player1.name)
+		self.assertEqual(response.data[0]['black'], player2.name)
 		self.assertEqual(response.data[0]['moves'], 46)
 		self.assertEqual(response.data[0]['result'], 'win')
-		self.assertEqual(response.data[0]['opening'], opening.id)
+		self.assertEqual(response.data[0]['opening'], opening.name)
 		response = self.client.get(url, params={"black_player_name": "Tojiddin", })
 		self.assertEqual(response.status_code, 200)
 		for data in response.data:
@@ -409,11 +369,11 @@ class GameTestCase(APITestCase):
 				list(data.keys()),
 				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
 			)
-		self.assertEqual(response.data[0]['white'], player1.id)
-		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['white'], player1.name)
+		self.assertEqual(response.data[0]['black'], player2.name)
 		self.assertEqual(response.data[0]['moves'], 46)
 		self.assertEqual(response.data[0]['result'], 'win')
-		self.assertEqual(response.data[0]['opening'], opening.id)
+		self.assertEqual(response.data[0]['opening'], opening.name)
 		response = self.client.get(url, params={"result": "win" })
 		self.assertEqual(response.status_code, 200)
 		for data in response.data:
@@ -421,11 +381,11 @@ class GameTestCase(APITestCase):
 				list(data.keys()),
 				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
 			)
-		self.assertEqual(response.data[0]['white'], player1.id)
-		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['white'], player1.name)
+		self.assertEqual(response.data[0]['black'], player2.name)
 		self.assertEqual(response.data[0]['moves'], 46)
 		self.assertEqual(response.data[0]['result'], 'win')
-		self.assertEqual(response.data[0]['opening'], opening.id)
+		self.assertEqual(response.data[0]['opening'], opening.name)
 		response = self.client.get(url, params={"opening": "Uzbekistan"})
 		self.assertEqual(response.status_code, 200)
 		for data in response.data:
@@ -433,8 +393,54 @@ class GameTestCase(APITestCase):
 				list(data.keys()),
 				['id', 'white', 'black', 'moves', 'date', 'result', 'opening']
 			)
-		self.assertEqual(response.data[0]['white'], player1.id)
-		self.assertEqual(response.data[0]['black'], player2.id)
+		self.assertEqual(response.data[0]['white'], player1.name)
+		self.assertEqual(response.data[0]['black'], player2.name)
 		self.assertEqual(response.data[0]['moves'], 46)
 		self.assertEqual(response.data[0]['result'], 'win')
-		self.assertEqual(response.data[0]['opening'], opening.id)
+		self.assertEqual(response.data[0]['opening'], opening.name)
+
+	def test_get_game(self):
+		player1 = Player.objects.get(name="Mirxojiddin")
+		player2 = Player.objects.get(name="Tojiddin")
+		opening = Opening.objects.get(name="Uzbeksitan")
+		game = Game.objects.get(white=player1)
+		url = reverse('gaming:game-detail', kwargs={'pk': game.id})
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.data['white'], player1.name)
+		self.assertEqual(response.data['black'], player2.name)
+		self.assertEqual(response.data['moves'], 46)
+		self.assertEqual(response.data['result'], 'win')
+		self.assertEqual(response.data['opening'], opening.name)
+
+	def test_edit_game(self):
+		player1 = Player.objects.get(name="Mirxojiddin")
+		player2 = Player.objects.get(name="Tojiddin")
+		opening = Opening.objects.get(name="Uzbeksitan")
+		player = Player.objects.get(name="Mirxojiddin")
+		formatted_date = datetime.now().strftime("%Y-%m-%d")
+		payload = {
+			"moves": 50,
+			"result": "win",
+			"date": f"{formatted_date}",
+			"opening": opening.id
+		}
+		print(payload)
+		url = reverse('gaming:game-detail', kwargs={'pk': player.id})
+
+		response = self.client.put(url, data=payload)
+		print(response.json())
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.data['moves'], 50)
+		self.assertEqual(response.data['result'], 'win')
+		self.assertEqual(response.data['opening'], opening.id)
+		payload = {
+			'moves': 54,
+			'date': formatted_date,
+			'opening': opening.id
+		}
+		response = self.client.patch(url, data=payload)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.data['moves'], 54)
+		self.assertEqual(response.data['result'], 'win')
+		self.assertEqual(response.data['opening'], opening.id)

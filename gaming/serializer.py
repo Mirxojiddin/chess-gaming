@@ -10,6 +10,7 @@ class CountryListSerializer(serializers.ModelSerializer):
 
 
 class PlayerListSerializer(serializers.ModelSerializer):
+	country = serializers.CharField(source='country.name')
 
 	class Meta:
 		model = Player
@@ -38,6 +39,9 @@ class OpeningListSerializer(serializers.ModelSerializer):
 
 
 class GameListSerializer(serializers.ModelSerializer):
+	white = serializers.CharField(source='white.name')
+	black = serializers.CharField(source='black.name')
+	opening = serializers.CharField(source='opening.name')
 
 	class Meta:
 		model = Game
